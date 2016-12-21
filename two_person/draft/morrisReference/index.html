@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Collective Behavior</title>
+    <!-- Load style sheet -->
+    <link href="index.css" media="screen" rel="stylesheet" type="text/css">
+
+    <!-- Notice the URL, this is handled by socket.io on the server automatically, via express -->
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+    <!-- Include some extra functional programming tools -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js"> </script>
+
+    <!-- Load jQuery, which lets us handle mouse events -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    <!-- Load the common game code. -->
+    <script type="text/javascript" src="game.core.js"></script>
+
+    <script type="text/javascript" src="../lib/js/curve.min.js"></script>    
+
+    <!-- Finally, Load the game client code. -->
+    <script type="text/javascript" src="../sharedUtils/clientBase.js"></script>    
+    <script type="text/javascript" src="game.client.js"></script>
+    <!-- <script type="text/javascript" src="drawing.js"></script> -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <script src="dictionary/wordList.min.js"></script>
+    <script src="dictionary/wordBank.min.js"></script>
+    <script src="mmturkey.js"></script>
+
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; }
+        #messages li { padding: 5px 10px; }
+        /*#messages li:nth-child(odd) { background: #eee; }*/
+    </style>
+
+    </head>
+
+  <body>
+    <div id='header'>
+      <button id='submitbutton' style="display: none;">Submit board</button>
+      <div id='textInfo'>
+    	<div class="row" > <h1 id='roleLabel'> You are the </h1> </div>
+    	<div class="row" > <p id='instructs'> </p> </div>
+        <div class="row" > <p class="twinkle" id='onlyOnePlayer'> <strong> <em> *Waiting for another player to connect...
+                <br> Please do not refresh the page!* </strong> </em> </p>  </div>
+
+        <center> <p id="waiting" class="twinkle"> Your partner is thinking....</p> </center>
+                <div id="spinningWaiting">  </div> 
+                <span>
+                             <div class="col-xs-offset-3" id='message_panel'>
+                                 <ul id="messages"></ul> 
+                                <hr> </div>
+        </div>
+      </div>
+      <p style="color:red" id='roundnumber'>Waiting room</p>
+
+      <p style="color:green" id='score'> </p>
+    </div>
+
+    <div id="gameTargetShared"> </div>
+         
+
+
+    <div class="slide"  id="referenceGame">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"> </div>
+        </div>
+
+        <center> <div class="points" id="myScore"> <p style="font-size:16px"> your points: </p> </div> </center>
+
+        <div class="row">
+            <div class="col-xs-5">
+                <div class="row" id="goal"> <strong> <center> <p style="margin-top:10%" class="col-xs-offset-2 col-md-offset-3"> Your goal is to get your partner <br> to find <em> this object: </em></p> </div> </center> </strong>
+                <div class="row"> <div class='hmm' id="gameTarget"> </div> <br> </div>
+                <div class="row "> <form> <center> <p class="col-xs-offset-2 col-md-offset-3"> You can type the object <br> label here: <br> </p> </center> </form> </div>
+                         <div  id='main'>
+                                <div id="chatarea">
+                                    <form action="">
+                                        <center> <input class="col-xs-offset-7" id="chatbox" autocomplete="off" />  </center>
+                                        <center> <button id="chatbutton">Send</button> </center>
+                                    </form>
+                                </div> 
+                            </span>
+                        </div> 
+                <!-- <div class="row"> <center> <input class="col-xs-offset-2 col-md-offset-3" type="text" name="label" id="labelInput" maxlength="9" autocomplete="off"> </form></div> </center> -->
+            </div>
+            <div class="col-xs-7 ">
+                <center> <form class="col-lg-offset-2" style="margin: 7% 0 0 0%"> You can click on the object here: <br> </form>
+               <div id="objects2" class="objectArray" style="margin-top:0%"> </div> 
+            </div>
+        </div> 
+        <center><div><button type="button" id="sendMessage" style="margin-top:27px" onClick="this.blur()"> </button></div></center> 
+        <center><div id="thatIsEnglish" style="margin-top:20px"> </div> </center>
+        <strong> <center> <div id="messageFromPartner" style="margin-top:18px"> </div> </center> </strong>
+        <center><div id="nextRound"> <button> Next Round </button> </div> </center>
+    </div>
+    </center>
+    </div>
+
+	<div class="slide" id="referenceGameReceiver">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"> </div>
+        </div>
+        <center> <p style="font-size:16px; font-weight:bold"> your points: </p> </center>
+        <center> <p class="points" id="myScore2" style="margin-top:-15px; margin-bottom:-10px"> </p> </center>
+        <div class="row">
+            <div >
+                <center> <p style="margin-top: 2%" id="yourPartnerSent2"> <br> </p> </center>
+                <center> <p style="font-size:25px; font-weight:bold; margin-top:-10px; margin-bottom:-25px" id="partnerMessage2"> </p> </center>
+                <div class="col-xs-12 col-md-10 col-lg-8 col-lg-offset-2 col-md-offset-1"> <div id="objects22" class="objectArray"> </div> </div>
+            </div>
+        </div> 
+        <center><div><button type="button" id="sendMessage2" style="margin-top:27px" onClick="this.blur()"> </button></div></center> 
+        <strong> <center> <div id="messageFromPartner2" style="margin-top:18px"> </div> </center> </strong>
+    </div>
+
+        <div id="exit_survey" style="display:none">
+	      <br><br><br><br><br>
+	      <h3> Thanks for participating in our experiment! </h3>
+	      <h3> Before you submit your HIT, we'd like to ask you a few questions. </h3>
+	      <br><br><br>
+	      <p> Did you believe you were playing against another human player? </p>
+	      <select onChange="dropdownTip('human::' + this.value)">
+		<option value=""></option>
+		<option value="yes">Yes, I thought they were a human</option>
+		<option value="no">No, I thought it was a computer program</option>
+	      </select>
+	      <p id='humanResult' style="display:none;color:red"> Thank you for your response -- in fact, all players were paired with other human turkers! <p>
+
+		<br> <br>
+	      <p> Are you a native English speaker? </p>
+	      <select onChange="dropdownTip('language::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+	      </select>
+	   <br><br>
+          <p> How much did you like working with your partner? </p>
+            <select onChange="dropdownTip('partner::' + this.value)">
+        <option value = ""></option>
+        <option value="not much">Not that much</option>
+        <option value="okay">My partner was fine</option>
+        <option value="liked">I liked working with my partner</option>
+        <option value="loved">I really enjoyed working with my partner</option>
+          </select>
+        <br><br>
+	      <p> Did you read the instructions and do you think you did the 
+		HIT correctly? </p>
+	      <select onChange="dropdownTip('confused::' + this.value)">
+		<option value = ""></option>
+		<option value="yes">Yes</option>
+		<option value="no">No</option>
+		<option value="confused">I was confused</option>
+	      </select>
+
+	   <br><br>
+
+	      <p> Do you have any comments on the experiment? </p>
+	      <textarea id='comments' rows="4" cols="50"></textarea>
+	      <br>
+	      <div><button id="surveySubmit" onclick="dropdownTip('submit')" type="button">Submit HIT</button></div>
+	    </div>
+            </span>
+        </div>
+
+        <script type="text/javascript" src="game_sender.js"></script>
+    </body>
+</html>
