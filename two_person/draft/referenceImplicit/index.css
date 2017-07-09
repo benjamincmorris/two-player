@@ -1,0 +1,490 @@
+html , body {
+     /*background: #000000; */
+     color: #fff; 
+     font-family: Helvetica;
+     margin: 0; 
+     padding: 0;
+}
+
+p {
+	font-size: 16px;
+}
+
+button {
+	background: url(images/button-gradient.png);
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	margin: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 29px;
+	min-width: 70px;
+}
+
+.crosshatch{
+	position:absolute;
+	height:20px;
+	/*issue in Explorer where it doesn't like negative margins? using 'left' to determine position is more compatible*/
+	left: 232px;
+    margin:200px 0 0 0px;
+    border-left: 2px dotted black;
+}
+
+
+.emptySquare {
+    width: 0;
+    height: 0;
+    border-left: 9px solid #fff;
+    border-right: 9px solid #fff;
+    border-bottom: 9px solid #fff;
+    border-top: 9px solid #fff;
+    outline: 1px solid black;
+    font-size: 0;
+    line-height: 0;
+}
+.square {
+    width: 0;
+    height: 0;
+    border-left: 10px solid #ce1212;
+    border-right: 10px solid #ce1212;
+    border-bottom: 10px solid #ce1212;
+    border-top: 10px solid #ce1212;
+    font-size: 0;
+    line-height: 0;
+}
+
+/*these classes (circle + deg...) let us arrange the objects in a circular fashion*/
+.circle-container {
+    position: relative;
+    width: 24em;
+    height: 24em;
+    padding: 2.8em;
+    /*2.8em = 2em*1.4 (2em = half the width of a link with img, 1.4 = sqrt(2))*/
+    /*border: dashed 1px;*/
+    /*border-radius: 50%;*/
+    margin: 1.75em auto 0;
+}
+.circle-container a {
+    display: block;
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 6em; height: 6em;
+    margin: -2em;
+}
+.circle-container img { display: block; width: 100%; }
+.deg0 { transform: translate(12em); } /* 12em = half the width of the wrapper */
+.deg40 { transform: rotate(40deg) translate(12em) rotate(-40deg); }
+.deg80 { transform: rotate(80deg) translate(12em) rotate(-80deg); }
+.deg120 { transform: rotate(120deg) translate(12em) rotate(-120deg); }
+.deg160 { transform: rotate(160deg) translate(12em) rotate(-160deg); }
+.deg200 { transform: rotate(200deg) translate(12em) rotate(-200deg); }
+.deg240 { transform: rotate(240deg) translate(12em) rotate(-240deg); }
+.deg280 { transform: rotate(280deg) translate(12em) rotate(-280deg); }
+.deg320 { transform: rotate(320deg) translate(12em) rotate(-320deg); }
+
+
+.pane {
+	/*float: center;*/
+    position: absolute;
+    left:40%;
+    top: 0px;
+    /*left: 100px;*/
+    width:475px; height:475px;
+    border-left: 2px dashed black;
+}
+    
+/*this defines the pointer to be used in the game
+	note that the position is specified in the javascript so that it is easy to reset the pointer on each new trial*/
+.box {
+    position:absolute; 
+    /*top:305px; left:180px;*/
+    /*width: 50px; height: 50px;          */
+	/*background: url('images/pointer.png') no-repeat top;*/
+    z-index: 2 !important;
+}
+
+#gameCircleArray {
+	margin-left:60px;
+}
+
+#exit_survey {
+	margin: 0 50px 0 50px;
+}
+
+button2 {
+	background: url(images/button-gradient.png);
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	margin: 40px;
+	padding-left: 5px;
+	padding-right: 5px;
+	height: 29px;
+	min-width: 70px;
+}
+button:active {
+	border-left: 1px solid #c9c9c9;
+	border-top: 1px solid #c9c9c9;
+	background: none;
+	background-color: #c9c9c9;
+}
+
+button[disabled] {
+	opacity: 0.4;
+	border: 1px solid #999;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	cursor: not-allowed;
+}
+
+.alignleft {
+	float: left;
+}
+
+.alignright {
+	float: right;
+}
+
+#header {
+    height: 20%;
+    width: 100%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#roleLabel {
+	height: 2%;
+	width: 50%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	/*margin-bottom: auto ;*/
+	/*left:0; right:0; top:0; bottom: 0;*/
+	/*position: absolute;*/
+		font-size: 160%
+
+}
+
+#instructs {
+	height: 2%;
+	width: 70%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	/*margin-bottom: auto ;*/
+	/*margin-top: 25px;*/
+	/*left:0; right:0; top:4%; bottom: 0;*/
+	/*position: absolute;*/
+	font-size: 120%
+}
+
+#roundnumber {
+	height: 2%;
+	width: 150px;
+	text-align: center;
+	margin-left: 80%;
+	/*margin-top: 1%;*/
+	/*margin-right: auto;*/
+	/*margin-bottom: auto ;*/
+	/*left:0; right:0; top:10%; bottom: 0;*/
+	/*position: absolute;*/
+	font-size: 150%
+}
+
+/*#score {
+	height: 10%;
+	width: 20%;
+	text-align: center;
+	margin-left: 1%;
+	margin-top: 1%;
+	margin-right: auto;
+	margin-bottom: auto ;
+	left:0; right:0; top:20%; bottom: 0;
+	position: absolute;
+	font-size: 150%;
+}*/
+
+#submitbutton {
+    height: 6%;
+    width: 5%;
+    float: left;
+    margin-left: 10%;
+    margin-top: 2%;
+    background: rgb(255,255,255);
+    border: none;
+    padding: 5px;
+
+/*trying to change around attributes of click button reduces the clickable area
+ALOT...don't understand how to adjust that.*/
+}
+
+/*#main {
+	height: auto;
+	width: auto;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: auto ;
+	left:0; right:0; top:10%; bottom: 0;
+	position: absolute;
+}*/
+
+/*height and width originally 80vh*/
+#messageFromPartner {
+	position: absolute;
+	float: center;
+	left: 50%;
+	width: 300px;
+	top: 75px;
+	margin-left: -150px;
+	z-index: 5;
+	background-color: white;
+	border: 2px black solid;
+	padding: 10px 10px 10px 10px;
+}
+
+#messageFromPartner2 {
+	position: absolute;
+	float: center;
+	left: 50%;
+	width: 300px;
+	margin-left: -150px;
+	top:300px;
+	z-index: 2;
+	background-color: white;
+	border: 2px black solid;
+	padding: 10px 10px 10px 10px;
+}
+
+#message_panel {
+	position: relative;
+	height: 40px;
+	width: 50%;
+	top: 20px;
+	/*float: top;*/
+	/*centers message_panel*/
+	/*margin: auto;*/
+	list-style-type: none; 
+
+	border: solid 1px #999; 
+}
+
+#messages {
+	height:65%;
+	text-align: left;
+	font-size: 200%;
+	/*overflow-y: scroll;*/
+	color: #000;
+}
+
+#chatarea form {
+	position: absolute;
+ 	/*top: 11%;*/
+
+	height: 4vh;
+	width: 60%; 
+}
+
+#chatarea input {
+	box-shadow: 0px 0px 0px 0px #999999 ; 
+	height: 59%;
+	font-size: 125%;
+	width: 75%; 
+	/*float: left;*/
+}
+
+#chatarea button {
+	width: 10%; 
+	height: 4vh;
+	font-size: 150%;
+	background: rgb(130, 224, 255); 
+	border: none; 
+	margin-left: .5%;
+	margin-right: .5%;
+}
+
+
+#waitingMessage  {
+	position: absolute;
+	float: center;
+	left: 40%;
+	top: 350px;
+	z-index: 5;
+	background-color: white;
+	margin-left: -15px;
+	border: 2px black solid;
+	color: red;
+	font-weight: bold;
+	padding: 15px 15px 35px 15px;
+	opacity: 1 !important;
+}
+
+#onlyOnePlayer {
+	position: absolute;
+	float: center;
+	left: 40%;
+	top: 350px;
+	z-index: 5;
+	background-color: white;
+	width: 400px;
+	margin-left: -75px;
+	border: 2px black solid;
+	color: red;
+	font-weight: bold;
+	padding: 15px 15px 15px 15px;
+	opacity: 1 !important;
+}
+
+#spinningWaiting {
+	position: absolute;
+	/*float: center;*/
+	/*left: 40%;*/
+	/*margin-left: -150px;*/
+	/*top: 375px;*/
+	/*z-index: 5;*/
+	/*background-color: white;*/
+	/*border: 2px black solid;*/
+    position: absolute; width: 100%; height: 100%; background: url('images/spinner.gif') no-repeat top; left:4px;
+	opacity: 1 !important;
+}
+
+#spinningWaiting2 {
+    position: absolute; width: 100%; height: 100%; background: url('images/spinner.gif') no-repeat top; left:4px;
+}
+#spinner {
+    position: absolute; width: 100%; height: 100%; background: url('images/spinner.gif') no-repeat top; left:4px;
+}
+
+#countdown {
+	position:absolute;
+	/*left:40%;*/
+	/*margin:25px 0 0 -215px;*/
+	margin-left: 70px;
+	top: -100px;
+}
+
+
+.toSelect:hover{
+	border: 2px solid #cc1e1e;
+} 
+
+/*.toSelect2:hover{
+	border: 2px solid #cc1e1e;
+} */
+
+#onlyOnePlayer {
+	text-transform: uppercase;
+}
+
+@keyframes twinkly {
+    0% {opacity: 0.1;}
+    80% {opacity: 1;}
+}
+
+.twinkle {
+    animation: twinkly .75s alternate infinite;
+}
+
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(255,255,255,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+
+/*likert scale stuff*/
+.wrap {
+  font:12px Arial, san-serif;
+}
+h1.likert-header {
+  padding-left:4.25%;
+  margin:20px 0 0;
+}
+form .statement {
+  display:block;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 30px 0 0 4.25%;
+  margin-bottom:10px;
+}
+form .likert {
+  list-style:none;
+  width:80%;
+  margin:0;
+  padding:0 0 35px;
+  display:block;
+  border-bottom:2px solid #efefef;
+}
+form .likert:last-of-type {border-bottom:0;}
+form .likert:before {
+  content: '';
+  position:relative;
+  top:11px;
+  left:9.5%;
+  display:block;
+  background-color:#efefef;
+  height:4px;
+  width:78%;
+}
+form .likert li {
+  display:inline-block;
+  width:19%;
+  text-align:center;
+  vertical-align: top;
+}
+form .likert li input[type=radio] {
+  display:block;
+  position:relative;
+  top:0;
+  left:50%;
+  margin-left:-6px;
+  
+}
+form .likert li label {width:100%;}
+form .buttons {
+  margin:30px 0;
+  padding:0 4.25%;
+  text-align:right
+} 
+form .buttons button {
+  padding: 5px 10px;
+  background-color: #67ab49;
+  border: 0;
+  border-radius: 3px;
+}
+form .buttons .clear {background-color: #e9e9e9;}
+form .buttons .submit {background-color: #67ab49;} 
+form .buttons .clear:hover {background-color: #ccc;}
+form .buttons .submit:hover {background-color: #14892c;} 
+
+
+
+.emptySquare {
+    width: 0;
+    height: 0;
+    border-left: 9px solid #fff;
+    border-right: 9px solid #fff;
+    border-bottom: 9px solid #fff;
+    border-top: 9px solid #fff;
+    outline: 1px solid black;
+    font-size: 0;
+    line-height: 0;
+}
+.square {
+    width: 0;
+    height: 0;
+    border-left: 10px solid #ce1212;
+    border-right: 10px solid #ce1212;
+    border-bottom: 10px solid #ce1212;
+    border-top: 10px solid #ce1212;
+    font-size: 0;
+    line-height: 0;
+}

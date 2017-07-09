@@ -1,0 +1,7 @@
+gameid,time,roundNum,sender,contents,myVar
+1806-a,1499463911773,1,speaker,werrqttt&speaker_target=2007-600,speaker_target=2007-600,null
+1806-a,1499463917485,1,listener,2002-600,null,null
+1806-a,1499463927300,1,speaker,&speaker_target=2009-600&speaker_clicked=2056-600,speaker_target=2009-600,speaker_clicked=2056-600
+1806-a,1499463931185,1,listener,2056-600,null,null
+1806-a,1499463946107,1,speaker,wert&speaker_target=2005-600&speaker_clicked=2005-600,speaker_target=2005-600,speaker_clicked=2005-600
+1806-a,1499463949504,1,listener,2005-600,null,null
