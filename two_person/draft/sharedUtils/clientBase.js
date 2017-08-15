@@ -17,7 +17,13 @@ var getURLParams = function() {
 var ondisconnect = function(data) {
   // Redirect to exit survey
   console.log("server booted");
-  this.viewport.style.display="none";
+  // $(body).style.display="none";
+  $(".slide").each(function() {
+    console.log(this)
+    document.getElementById(this.id).style.display= "none"
+    // $('"#' +this.id + '"').hide()
+  })
+  $('#header').hide()
   $('#message_panel').hide();
   $('#submitbutton').hide();
   $('#roleLabel').hide();
@@ -34,8 +40,48 @@ var onconnect = function(data) {
   // drawScreen(this, this.get_player(this.my_id));
 };
 
+var letMeClick = function(game) {
+  clockStarted=false
+  // Tell server when client types something in the chatbox
+  $(window).on('keydown', function(event){
+
+      if (globalGame.get_player(globalGame.my_id).message == '') {
+        if (clockStarted != true) {
+          startTimer("countdown"); 
+          time1 = new Date().getTime();
+        }
+        clockStarted = true
+        if(event.keyCode == 13) {
+          time2 = new Date().getTime()
+          stopTimer('countdown')
+          var origMsg = $('#chatbox').val();
+          var msg = 'chatMessage.' + origMsg.replace(/\./g, '~~~')+ '&speaker_target=' + globalGame.target.split(".")[0];
+          if(role.includes("speaker")){
+            $('.circleArray').each(function() {
+              if(this.style.border!=  '') {
+                console.log('flagme')
+                console.log(this)
+                speaker_clicked= this.id
+                msg = msg.concat("&speaker_clicked=" + speaker_clicked.split(".")[0])
+                console.log(msg)
+              }
+            })
+          }
+      // var msg = 'chatMessage.' + origMsg
+      if($('#chatbox').val() != '' | msg.includes("&speaker_clicked")) {
+        game.socket.send(msg);
+        globalGame.sentTyping = false;
+        $('#chatbox').val('');
+      }
+      return false;   
+    }
+  }
+  });
+}
+
 // Associates callback functions corresponding to different socket messages
 var sharedSetup = function(game) {
+  counter=0
   //Store a local reference to our connection to the server
   game.socket = io.connect();
 
@@ -50,12 +96,25 @@ var sharedSetup = function(game) {
       globalGame.sentTyping = false;
     }
   });
+
+  letMeClick(game)
   
   // Tell server when client types something in the chatbox
   $('form').submit(function(){
     var origMsg = $('#chatbox').val();
-    var msg = 'chatMessage.' + origMsg.replace(/\./g, '~~~');
-    if($('#chatbox').val() != '') {
+    var msg = 'chatMessage.' + origMsg.replace(/\./g, '~~~')+ '&speaker_target=' + globalGame.target.split(".")[0];
+    if(role.includes("speaker")){
+      $('.toSelect').each(function() {
+        if(this.style.border!=  '') {
+          console.log(this.alt)
+          speaker_clicked= this.alt
+          msg = msg.concat("&speaker_clicked=" + speaker_clicked.split(".")[0])
+          console.log(msg)
+        }
+      })
+    }
+    // var msg = 'chatMessage.' + origMsg
+    if($('#chatbox').val() != '' | msg.includes("&speaker_clicked")) {
       game.socket.send(msg);
       globalGame.sentTyping = false;
       $('#chatbox').val('');
@@ -63,49 +122,207 @@ var sharedSetup = function(game) {
     return false;   
   });
 
+
   game.socket.on('playerTyping', function(data){
     if(data.typing == "true") {
       $('#messages')
-  .append('<span class="typing-msg">Other player is typing...</span>')
-  .stop(true,true)
-  .animate({
-    scrollTop: $("#messages").prop("scrollHeight")
-  }, 800);
+      .append('<span class="typing-msg">Other player is typing...</span>')
+      .stop(true,true)
+      .animate({
+        scrollTop: $("#messages").prop("scrollHeight")
+      }, 800);
     } else {
       $('.typing-msg').remove();
     }
   });
+
+
+  $(".toSelect2").bind("click",  function() {
+    console.log('clicking toSelect2...')
+    game.socket.send('testing.toSelect2 sent')
+  })
+
+
+  game.socket.on('testing', function(data){
+    alert('test is working?')
+    console.log('helloooo ' + data)
+  });
+
+
+
+  $("#sendMessage2").bind("click",  function() {
+    //and make these changes to the receiver's screen
+    if (globalGame.my_role === game.playerRoleNames.role2) {
+        // $("#waiting").fadeIn(500);
+        // $("#spinningWaiting").fadeIn(500)
+        // $("#topHalfReceiver").fadeTo("slow", .5)
+        $(".toSelect").off("click")
+        document.getElementById("sendMessage2").disabled = true;
+        document.getElementById("sendMessage2").innerHTML = 'Selection Sent!';
+        $("#messageFromPartner2").show()
+
+        $(".toSelect").each(function(){
+          if(this.style.border=="5px solid black") {
+            selection = 'chatMessage.' + this.alt
+            console.log(selection)
+          }
+        })
+          game.socket.send(selection);
+          globalGame.sentTyping = false;
+        return false; 
+    }
+  })
   
   // Update messages log when other players send chat
   game.socket.on('chatMessage', function(data){
-    // Just in case we want to bar responses until after some message received
-    console.log('disable everything and move new rounds!!!')
-    if (globalGame.my_role === game.playerRoleNames.role1) {
-      $("#chatbox").attr("disabled", "disabled")
-      $("#main").fadeTo("slow", 0.5)
-      $("#referenceGame").fadeTo("slow", 0.5)
-      $("#waiting").fadeIn(500);
-      $("#spinningWaiting").fadeIn(500)
-    }
-    if (globalGame.my_role === game.playerRoleNames.role2) {
-      $("#waiting").hide();
-      $("#spinningWaiting").hide()
-      $("#referenceGameReceiver").fadeTo("slow", 1)
-    }
-
-    globalGame.messageSent = true;
+    $(window).off('keyup')
+    $(window).off('keydown')
+    console.log(data.msg)
+    // console.log(document.getElementById('myScore').innerHTML.split(':')[1])
+    // scoreCurrent= document.getElementById('myScore').innerHTML.split(':')[1]
+    globalGame.messageSe
+    nt = true;
     var otherRole = (globalGame.my_role === game.playerRoleNames.role1 ?
          game.playerRoleNames.role2 : game.playerRoleNames.role1);
+    console.log(otherRole)
     var source = data.user === globalGame.my_id ? "You" : otherRole;
-    var col = source === "You" ? "#8c8c8c" : "#dddddd";
-    $('.typing-msg').remove();
-    $('#messages')
-      .append($('<li style="padding: 5px 10px; background: ' + col + '">')
-            .text(source + ": " + data.msg))
-      .stop(true,true)
-      .animate({
-  scrollTop: $("#messages").prop("scrollHeight")
-      }, 800);
+    console.log(data.user)
+
+    // if the receiver has made a selection, advance the count and move on
+    if(!data.msg.includes('&speaker_target')) {
+        // show the speaker the selection
+        if(role.includes('speaker')) {
+          // this enabling wants to live elsewhere?
+          letMeClick(globalGame)
+          $(".toSelect").each(function(){
+            console.log(this)
+            if(this.alt.includes(data.msg)) {
+              this.style.outline="3px red dashed"
+              this.style.zIndex=2
+              return falsey
+            }
+          }) 
+          $(".circleArray").each(function(){   
+            if(this.id.includes(data.msg)) {
+              this.style.outline="3px red dashed"
+              this.style.zIndex=2
+              return false
+            }
+          })
+        } 
+      console.log(speakerTarget)
+      counter=counter+1
+      experiment.gameWaiting(counter,37+counter, data.msg, speakerTarget, speakerMessage, messageType)
+    }
+
+    // if the speaker has sent a message...
+    if(data.msg.includes("&speaker_target=")) {
+        msgArray = data.msg.split("&")
+        console.log(msgArray)
+        speakerTarget = msgArray[1]
+        speakerMessage = msgArray[0]
+        var col = source === "You" ? "#8c8c8c" : "#dddddd";
+        $('.typing-msg').remove();
+        console.log(msgArray[0])
+        if(msgArray[0]=="") {
+          $('#messages').text(source + ": " + "*pointed*")
+          messageType = 'click'
+        } else {
+          $('#messages').text(source + ": " + msgArray[0])
+          messageType = "label"
+        }
+    }
+    // if the speaker sent a message, make these changes to the listener screen
+    if (data.msg.includes('speaker') && role.includes('listener')) {
+        $("#topHalfReceiver").fadeTo("slow", 1)
+        message=0
+        $('.toSelect').on('click', function() {
+          console.log('hellllooooo')
+          //if neither pointing nor typing has occured, select the target element and note that.
+          if (message==0) {
+            this.style.border="5px solid black";
+            document.getElementById("sendMessage2").disabled = false;
+            // possible points determined by the type of trial, receiving a click message or label message  
+            document.getElementById("sendMessage2").innerHTML="Select Object for <strong> <em> " +trueLabelPoints+" Possible Points </em> </strong>";
+            selection = this.alt;
+            message = 1; // change message value to 1 if clicked. 
+            isCorrect = 1; // flag as correct. will be overwritten if incorrect. 
+            return;
+          }
+          //if the target has already been clicked on, assume they are 'unclicking' and revert..
+          if (message==1) {
+            // if you have selected an object, and are trying to click another object, do nothing.
+            if (this.style.border!="5px solid black") {return
+            // otherwise, revert the selection, check if this is a clicked message situation and make appropriate change 
+            } else {this.style.border=""}
+            // if there is a label typed out, keep the sendMessage button enabled and change it to 10 possible points
+            document.getElementById("sendMessage2").disabled = true;
+            document.getElementById("sendMessage2").innerHTML="Make a Selection";
+            message=0;
+            return;
+          }
+        });
+        //if the sender clicked, register this on listener screen too
+        if(data.msg.includes("&speaker_clicked=")){
+          $(".toSelect").each(function() {
+            if(msgArray[2].includes(this.alt.split('.')[0])){
+              this.style.outline= "2px black dashed"
+              this.style.zIndex=2
+            }
+          })
+          if (messageType=='label') {
+            messageType = 'label_click'
+          }
+        }
+  
+    }
+
+    
+    // Just in case we want to bar responses until after some message received
+    if (source === 'You') {
+      console.log('disable everything and move new rounds!!!')
+      $(".toSelect").off("click")
+      // $(".toSelect").each(function(){
+        // console.log('remove hover function   ' + this.id + this.class)
+          // $(this).removeClass('toSelect')
+          // console.log(this)
+      // })
+      // $('#messages').empty();    
+      console.log($('#messages').last())
+      $("#chatbox").attr("disabled", "disabled")
+      // $("#main").fadeTo("slow", 0.5)
+      if (globalGame.my_role === 'listener') {
+        $("#topHalfReceiver").fadeTo("slow", .5)
+      } else {
+        $("#topHalfSender").fadeTo("slow", .5)
+      }
+      if(data.msg.includes('speaker_target')) { 
+        console.log('fading in because  ' + data.msg)
+        $("#waitingMessage").fadeIn(500);
+        // $("#spinningWaiting").fadeIn(500)
+      }
+    } else {
+        $("#waitingMessage").hide();
+        // $("#spinningWaiting").hide()
+      if (globalGame.my_role === 'listener') {
+        // $("#referenceGameReceiver").fadeTo("slow", 1)
+      } else {
+        // $("#referenceGame").fadeTo("slow", 1)
+      }
+    }
+    // if (globalGame.my_role === game.playerRoleNames.role2) {
+    //   // $(".toSelect").off("click")
+    //   // $(".toSelect").each(function(){
+    //   //   console.log('remove hover function   ' + this.id + this.class)
+    //   //     $(this).removeClass('toSelect')
+    //   //     console.log(this)
+    //   // })
+    //   $("#waiting").hide();
+    //   $("#spinningWaiting").hide()
+    //   $("#referenceGameReceiver").fadeTo("slow", 1)
+    // }
+
+
   });
 
   //so that we can measure the duration of the game
@@ -122,21 +339,25 @@ var sharedSetup = function(game) {
   game.socket.on('onconnected', onconnect.bind(game));
   //On message from the server, we parse the commands and send it to the handlers
   game.socket.on('message', client_onMessage.bind(game));
+  // game.socket.on('message', client_onMessage.bind(game));
 };
 
 // When loading the page, we store references to our
 // drawing canvases, and initiate a game instance.
 window.onload = function(){
-  //Create our game client instance.
-  globalGame = new game_core({server: false});
+
+  console.log('stuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuffstuff')
+
+  // //Create our game client instance.
+  // globalGame = new game_core({server: false});
   
-  //Connect to the socket.io server!
-  sharedSetup(globalGame);
-  customSetup(globalGame);
-  globalGame.submitted = false;
+  // //Connect to the socket.io server!
+  // sharedSetup(globalGame);
+  // customSetup(globalGame);
+  // globalGame.submitted = false;
     
-  //Fetch the viewport
-  globalGame.viewport = document.getElementById('viewport');
+  // //Fetch the viewport
+  // globalGame.viewport = document.getElementById('viewport');
 
   //Adjust its size
   // globalGame.viewport.width = globalGame.world.width;
@@ -148,7 +369,6 @@ window.onload = function(){
   //Set the draw style for the font
   // globalGame.ctx.font = '11px "Helvetica"';
 
-  document.getElementById('chatbox').focus();
 
 };
 
@@ -179,6 +399,8 @@ function dropdownTip(data){
     globalGame.submitted = true;
     console.log("data is...");
     console.log(globalGame.data);
+          turk.submit(globalGame.data, true);
+
     if(_.size(globalGame.urlParams) == 4) {
       window.opener.turk.submit(globalGame.data, true);
       window.close(); 
@@ -196,6 +418,7 @@ window.onbeforeunload = function(e) {
   e = e || window.event;
   var msg = ("If you leave before completing the task, "
        + "you will not be able to submit the HIT.");
+  // e.returnValue=msg
   if (!globalGame.submitted) {
     // For IE & Firefox
     if (e) {
@@ -228,20 +451,20 @@ window.onbeforeunload = function(e) {
     = window.onblur = onchange;
 })();
 
-function onchange (evt) {
-  var v = 'visible', h = 'hidden',
-      evtMap = { 
-        focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h 
-      };
-  evt = evt || window.event;
-  if (evt.type in evtMap) {
-    document.body.className = evtMap[evt.type];
-  } else {
-    document.body.className = evt.target.hidden ? "hidden" : "visible";
-  }
-  visible = document.body.className;
-  globalGame.socket.send("h." + document.body.className);
-};
+// function onchange (evt) {
+//   var v = 'visible', h = 'hidden',
+//       evtMap = { 
+//         focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h 
+//       };
+//   evt = evt || window.event;
+//   if (evt.type in evtMap) {
+//     document.body.className = evtMap[evt.type];
+//   } else {
+//     document.body.className = evt.target.hidden ? "hidden" : "visible";
+//   }
+//   visible = document.body.className;
+//   globalGame.socket.send("h." + document.body.className);
+// };
 
 (function () {
 
